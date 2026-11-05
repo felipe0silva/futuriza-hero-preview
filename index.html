@@ -34,13 +34,12 @@
     a { color: inherit; }
 
     /*
-      Sticky film stage is TRANSPARENT outside the video mask so section 2
-      (pulled up underneath) shows through as the film shrinks — no cream void.
+      Video shrinks toward the TOP while section 2 scrolls up in front
+      (higher z-index) — simultaneous, never behind the film, no cream void.
     */
     .scroll-track {
       position: relative;
-      /* stage 100vh + post-hero (~auto) with -100vh overlap + scrub room */
-      padding-bottom: 40vh;
+      /* stage (100vh sticky) + section 2 in flow = scrub while content rises */
     }
     .stage {
       position: sticky;
@@ -48,38 +47,30 @@
       height: 100vh;
       height: 100dvh;
       width: 100%;
-      overflow: visible;
-      background: transparent;
-      z-index: 5;
-      pointer-events: none;
-    }
-    .stage .mask,
-    .stage .hero-copy,
-    .stage .hint {
-      pointer-events: auto;
+      overflow: hidden;
+      background: var(--cream);
+      z-index: 1; /* BELOW section 2 */
     }
 
     /*
-      Start FULL-BLEED, then shrink + disappear on scroll (Vero MainHero direction).
-      progress 0 → scale 1 (full). progress 1 → scale ~0 (gone).
+      Start FULL-BLEED. On scroll: shrink toward top + fade out.
+      Vacates the lower viewport for section 2 rising in front.
     */
     .mask {
       --mask-progress: 0;
-      --mask-scale-h: calc(1 - var(--mask-progress));
-      --mask-scale-v: calc(1 - var(--mask-progress));
+      --p: var(--mask-progress);
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      clip-path: polygon(
-        calc(50% - 50% * var(--mask-scale-h)) calc(50% - 50% * var(--mask-scale-v)),
-        calc(50% + 50% * var(--mask-scale-h)) calc(50% - 50% * var(--mask-scale-v)),
-        calc(50% + 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v)),
-        calc(50% - 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v))
-      );
-      opacity: calc(1 - var(--mask-progress) * 0.15);
-      will-change: clip-path, opacity;
+      left: 50%;
+      top: 0;
+      width: calc(100% * (1 - 0.28 * var(--p)));
+      height: calc(100% * (1 - 0.88 * var(--p)));
+      transform: translateX(-50%);
+      transform-origin: top center;
+      opacity: calc(1 - var(--p) * 0.35);
+      will-change: width, height, opacity;
       background: #0a0a0a;
+      overflow: hidden;
+      z-index: 2;
     }
     .mask video {
       position: absolute;
@@ -272,7 +263,7 @@
       bottom: max(28px, calc(env(safe-area-inset-bottom) + 20px));
       left: 50%;
       transform: translateX(-50%);
-      z-index: 6;
+      z-index: 3;
       font-family: var(--ui);
       font-size: 10px;
       letter-spacing: 0.22em;
@@ -286,25 +277,24 @@
     .hint.is-hidden { opacity: 0; }
 
     /*
-      Section 2 sits UNDER the sticky transparent stage (margin-top: -100vh)
-      so as the film shrinks, this block is already in sequence — no empty gap.
+      Section 2 follows the sticky stage in normal flow with HIGHER z-index,
+      so it rises into the viewport as the film shrinks toward the top —
+      always in front of the video, never tucked underneath it.
     */
     .post-hero {
       background: var(--cream);
       color: var(--ink);
       text-align: center;
-      /* Pull under the 100vh sticky stage from the first paint */
-      margin-top: -100vh;
-      padding: clamp(18vh, 22vh, 26vh) 24px clamp(56px, 8vh, 96px);
-      min-height: 100vh;
-      min-height: 100dvh;
+      margin-top: 0;
+      padding: clamp(48px, 8vh, 80px) 24px clamp(64px, 10vh, 120px);
+      min-height: 90vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: clamp(28px, 4.5vh, 48px);
       position: relative;
-      z-index: 1;
+      z-index: 6; /* ABOVE sticky stage / video */
       box-sizing: border-box;
     }
     .post-hero h2 {
@@ -456,9 +446,10 @@
       .hero-copy { top: 40%; width: min(94vw, 920px); gap: 10px; }
       .hero-copy .f-mark { width: 51px; height: 51px; }
       .post-hero {
-        margin-top: -100vh;
-        padding: 18vh 16px 64px;
+        margin-top: 0;
+        padding: 40px 16px 72px;
         gap: 24px;
+        min-height: 85vh;
       }
       .logo-marquee figure { height: 76px; padding: 0 6px; }
       .logo-marquee img { max-height: 56px; }
@@ -612,17 +603,18 @@
       const mask = document.getElementById('mask');
       function apply() {
         ticking = false;
-        // Map early scroll to full shrink so section 2 is visible as film leaves
         const raw = scrollProgress();
-        const p = clamp(raw / 0.55, 0, 1); // finish vanish by ~55% of track
+        // Finish film shrink as section 2 climbs into the lower viewport
+        const p = clamp(raw / 0.65, 0, 1);
         if (mask) mask.style.setProperty('--mask-progress', p.toFixed(4));
-        hint.classList.toggle('is-hidden', p > 0.06);
+        hint.classList.toggle('is-hidden', p > 0.05);
 
-        const pastIntro = p > 0.45;
+        const pastIntro = p > 0.35;
         heroCopy.classList.toggle('is-gone', pastIntro);
         brandFixed.classList.toggle('is-visible', pastIntro);
 
-        const pastVideo = p > 0.2;
+        // Menu goes black once cream / section 2 dominates
+        const pastVideo = p > 0.18;
         document.body.classList.toggle('is-past-video', pastVideo);
       }
       function onScroll() {
