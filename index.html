@@ -35,7 +35,7 @@
 
     /* Tall track so sticky stage can scrub the mask */
     .scroll-track {
-      height: 240vh;
+      height: 200vh;
       position: relative;
     }
     .stage {
@@ -48,12 +48,26 @@
       background: var(--cream);
     }
 
-    /* Full-bleed film from load — no small→expand / shrink framing */
+    /*
+      Start FULL-BLEED, then shrink + disappear on scroll (Vero MainHero direction).
+      progress 0 → scale 1 (full). progress 1 → scale ~0 (gone).
+    */
     .mask {
+      --mask-progress: 0;
+      --mask-scale-h: calc(1 - var(--mask-progress));
+      --mask-scale-v: calc(1 - var(--mask-progress));
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
+      clip-path: polygon(
+        calc(50% - 50% * var(--mask-scale-h)) calc(50% - 50% * var(--mask-scale-v)),
+        calc(50% + 50% * var(--mask-scale-h)) calc(50% - 50% * var(--mask-scale-v)),
+        calc(50% + 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v)),
+        calc(50% - 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v))
+      );
+      opacity: calc(1 - var(--mask-progress) * 0.15);
+      will-change: clip-path, opacity;
       background: #0a0a0a;
     }
     .mask video {
@@ -260,16 +274,19 @@
     }
     .hint.is-hidden { opacity: 0; }
 
-    /* Second section — Vero post-hero layout: headline + logo marquee + light CTA */
+    /* Second section — closer under video; headline + 4-col logo marquee + CTA */
     .post-hero {
       background: var(--cream);
       color: var(--ink);
       text-align: center;
-      padding: clamp(72px, 12vh, 140px) 24px clamp(88px, 14vh, 160px);
+      padding: clamp(20px, 3.5vh, 40px) 24px clamp(64px, 10vh, 120px);
+      margin-top: -4vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: clamp(36px, 6vh, 64px);
+      gap: clamp(28px, 4.5vh, 48px);
+      position: relative;
+      z-index: 2;
     }
     .post-hero h2 {
       font-family: var(--ui);
@@ -277,23 +294,32 @@
       font-size: clamp(26px, 4.2vw, 48px);
       line-height: 1.18;
       letter-spacing: -0.02em;
-      max-width: 18ch;
+      max-width: 20ch;
       margin: 0;
       color: var(--ink);
     }
+    .post-hero h2 .authority-mark {
+      display: inline-block;
+      height: 0.92em;
+      width: auto;
+      vertical-align: -0.18em;
+      margin: 0 0.08em;
+    }
     .logo-marquee {
-      width: min(100%, 980px);
+      --marquee-w: min(92vw, 900px);
+      --cols: 4;
+      width: var(--marquee-w);
       overflow: hidden;
-      mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-      -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
       position: relative;
     }
     .logo-marquee__track {
       display: flex;
       width: max-content;
-      gap: 48px;
+      gap: 0;
       align-items: center;
-      animation: marquee-logos 42s linear infinite;
+      animation: marquee-logos 36s linear infinite;
       will-change: transform;
     }
     .logo-marquee__track:hover {
@@ -301,20 +327,22 @@
     }
     .logo-marquee figure {
       margin: 0;
-      flex: 0 0 auto;
-      height: 48px;
+      flex: 0 0 calc(var(--marquee-w) / var(--cols));
+      width: calc(var(--marquee-w) / var(--cols));
+      height: 96px;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0 10px;
     }
     .logo-marquee img {
-      max-height: 40px;
-      max-width: 140px;
+      max-height: 72px;
+      max-width: 92%;
       width: auto;
       height: auto;
       object-fit: contain;
       filter: grayscale(1);
-      opacity: 0.72;
+      opacity: 0.8;
     }
     @keyframes marquee-logos {
       from { transform: translateX(0); }
@@ -408,10 +436,10 @@
       .cta { padding: 10px 14px; font-size: 10px; }
       .hero-copy { top: 40%; width: min(94vw, 920px); gap: 10px; }
       .hero-copy .f-mark { width: 51px; height: 51px; }
-      .post-hero { padding: 64px 18px 88px; gap: 32px; }
-      .logo-marquee__track { gap: 32px; }
-      .logo-marquee figure { height: 40px; }
-      .logo-marquee img { max-height: 32px; max-width: 110px; }
+      .post-hero { padding: 16px 16px 72px; gap: 24px; margin-top: -2vh; }
+      .logo-marquee figure { height: 76px; padding: 0 6px; }
+      .logo-marquee img { max-height: 56px; }
+      .post-hero h2 .authority-mark { height: 0.95em; }
       .post-cta { padding: 18px 32px; }
     }
 
@@ -439,7 +467,7 @@
 
   <div class="scroll-track" id="track">
     <section class="stage" id="stage" aria-label="Hero Futuriza">
-      <div class="mask" id="mask">
+      <div class="mask" id="mask" style="--mask-progress: 0">
         <video
           id="heroVideo"
           src="video/hero.mp4"
@@ -466,7 +494,7 @@
 
   <!-- Second section (Vero post-hero layout): headline + moving logos + light CTA -->
   <section class="post-hero" id="sobre" aria-label="Sobre a Futuriza">
-    <h2>Futuriza is the fashion tech authority that turns brands into visual systems built for scale.</h2>
+    <h2>Futuriza is the fashion tech <img class="authority-mark" src="brand/fta-authority-green.png" alt="Authority" /> that turns brands into visual systems built for scale.</h2>
     <div class="logo-marquee" aria-label="Clientes">
       <div class="logo-marquee__track">
           <figure><img src="logos/farm-rio.png" alt="Farm Rio" loading="lazy" decoding="async" /></figure>
@@ -557,21 +585,23 @@
       }
 
       let ticking = false;
+      const mask = document.getElementById('mask');
       function apply() {
         ticking = false;
         const p = scrollProgress();
-        hint.classList.toggle('is-hidden', p > 0.12);
+        // Shrink + vanish the full-bleed film
+        if (mask) mask.style.setProperty('--mask-progress', p.toFixed(4));
+        hint.classList.toggle('is-hidden', p > 0.08);
 
-        // After scrolling through the sticky video stage, headline leaves;
-        // full Futuriza wordmark fades in above the fixed side menu.
-        const pastIntro = p > 0.78;
+        // Headline / F leave as film shrinks; full wordmark above side menu
+        const pastIntro = p > 0.55;
         heroCopy.classList.toggle('is-gone', pastIntro);
         brandFixed.classList.toggle('is-visible', pastIntro);
 
-        // White menu on video → black once we leave the sticky stage into cream
+        // White on film → black once cream framing is strong / past the stage
         const stage = document.getElementById('stage');
         const stageBottom = stage.getBoundingClientRect().bottom;
-        const pastVideo = stageBottom < innerHeight * 0.55;
+        const pastVideo = p > 0.28 || stageBottom < innerHeight * 0.55;
         document.body.classList.toggle('is-past-video', pastVideo);
       }
       function onScroll() {
