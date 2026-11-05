@@ -48,31 +48,12 @@
       background: var(--cream);
     }
 
-    /*
-      Vero MainHero-style scroll mask (recreated formula).
-      At progress 0 → full-bleed. Shrink reveals cream framing later.
-    */
-    /*
-      Vero-style intro: video STARTS SMALL (nested rectangle in cream) then EXPANDS
-      to full-bleed as scroll progress goes 0 → 1. (Not shrink-from-full.)
-    */
+    /* Full-bleed film from load — no small→expand / shrink framing */
     .mask {
-      --mask-progress: 0;
-      /* start ~26% × 16%, end 100% × 100% */
-      --mask-scale-h: calc(0.26 + 0.74 * var(--mask-progress));
-      --mask-scale-v: calc(0.16 + 0.84 * var(--mask-progress));
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      clip-path: polygon(
-        calc(50% - 50% * var(--mask-scale-h)) calc(50% - 50% * var(--mask-scale-v)),
-        calc(50% + 50% * var(--mask-scale-h)) calc(50% - 50% * var(--mask-scale-v)),
-        calc(50% + 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v)),
-        calc(50% - 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v))
-      );
-      transition: clip-path 0.05s linear;
-      will-change: clip-path;
       background: #0a0a0a;
     }
     .mask video {
@@ -95,12 +76,11 @@
     }
     .chrome-fixed > * { pointer-events: auto; }
 
-    /* Full Futuriza mark: fades in ABOVE the fixed side menu after headline leaves */
+    /* Full Futuriza wordmark: only AFTER scroll, above fixed side menu */
     .brand-fixed {
       position: fixed;
       left: max(18px, env(safe-area-inset-left));
       top: 50%;
-      /* Sit just above the vertical menu cluster */
       transform: translateY(calc(-50% - 118px));
       z-index: 13;
       display: flex;
@@ -110,11 +90,7 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition:
-        opacity 0.7s var(--ease-out-quart),
-        visibility 0.7s,
-        filter 0.45s ease;
-      filter: drop-shadow(0 1px 10px rgba(0,0,0,0.35));
+      transition: opacity 0.7s var(--ease-out-quart), visibility 0.7s;
     }
     .brand-fixed.is-visible {
       opacity: 1;
@@ -127,59 +103,52 @@
       max-width: min(46vw, 160px);
       object-fit: contain;
       display: block;
-      /* Appears after expand — usually still cream margins or transitioning */
+      /* Past video → cream page: keep dark mark */
       mix-blend-mode: multiply;
       filter: none;
     }
-    body:not(.is-framed) .brand-fixed .wordmark {
-      mix-blend-mode: normal;
-      filter: brightness(0) invert(1);
-    }
 
-    /* Apple-style liquid glass CTA */
+    /*
+      Studio-style square glass CTA (border-radius: 0).
+      Frosted translucent plate — not a pill.
+    */
     .cta {
+      --fz-green: #00E091;
       position: fixed;
       top: max(16px, env(safe-area-inset-top));
       right: max(14px, env(safe-area-inset-right));
       z-index: 14;
       font-family: var(--ui);
       font-size: 11px;
+      font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      padding: 12px 18px;
-      border-radius: 980px;
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.42) 0%,
-          rgba(255, 255, 255, 0.18) 100%
-        );
-      -webkit-backdrop-filter: saturate(180%) blur(22px);
-      backdrop-filter: saturate(180%) blur(22px);
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -0.5px 0 rgba(255, 255, 255, 0.12),
-        0 0.5px 1px rgba(0, 0, 0, 0.04);
-      color: rgba(255, 255, 255, 0.96);
-      text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.18);
+      padding: 14px 20px;
+      border-radius: 0;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.16);
+      -webkit-backdrop-filter: saturate(160%) blur(18px);
+      backdrop-filter: saturate(160%) blur(18px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      color: #fff;
+      text-shadow: none;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       text-decoration: none;
       display: inline-block;
       transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
-    .cta:active { transform: scale(0.98); }
-    body.is-framed .cta {
-      border-color: rgba(255, 255, 255, 0.65);
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.72) 0%,
-          rgba(255, 255, 255, 0.38) 100%
-        );
+    .cta:hover {
+      border-color: rgba(0, 224, 145, 0.7);
+      background: rgba(255, 255, 255, 0.22);
+    }
+    .cta:active { transform: scale(0.99); }
+    body.is-past-video .cta {
+      border-color: rgba(26, 26, 26, 0.18);
+      background: rgba(255, 255, 255, 0.55);
       color: var(--ink);
-      text-shadow: none;
+      -webkit-backdrop-filter: saturate(160%) blur(14px);
+      backdrop-filter: saturate(160%) blur(14px);
     }
 
     nav.side {
@@ -193,43 +162,39 @@
       gap: 16px;
     }
     nav.side a {
-      color: var(--ink);
+      color: #fff;
       text-decoration: none;
       font-size: 11px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       font-family: var(--ui);
-      opacity: 0.88;
+      opacity: 0.92;
       display: flex;
       align-items: baseline;
       gap: 10px;
       -webkit-tap-highlight-color: transparent;
-      text-shadow: none;
-      transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.2s ease;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.45);
+      transition: color 0.4s ease, text-shadow 0.4s ease, opacity 0.2s ease;
     }
     nav.side a:hover,
     nav.side a:focus-visible { opacity: 1; }
     nav.side .num {
       font-size: 10px;
-      opacity: 0.45;
+      opacity: 0.55;
       font-variant-numeric: lining-nums;
       min-width: 1.1em;
     }
-    body:not(.is-framed) nav.side a {
-      color: var(--cream);
-      text-shadow: 0 1px 12px rgba(0,0,0,0.55);
+    body.is-past-video nav.side a {
+      color: var(--ink);
+      text-shadow: none;
     }
 
     /* Title over the video — clipped away with the mask on scroll */
-    /*
-      Headline lives OUTSIDE the video mask so it stays on the cream page while
-      the small film expands underneath (Vero nests the frame in the typography).
-      It fades out once the film has mostly filled the viewport.
-    */
+    /* Centered overlay on full-bleed video: F icon + FASHION TECH / authority */
     .hero-copy {
       position: absolute;
       left: 50%;
-      top: 50%;
+      top: 42%;
       transform: translate(-50%, -50%);
       z-index: 5;
       text-align: center;
@@ -238,25 +203,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0;
-      color: var(--ink);
-      text-shadow: none;
-      transition: opacity 0.45s var(--ease-out-quart), color 0.35s ease;
-    }
-    .hero-copy .line1 { order: 1; }
-    .hero-copy .film-gap {
-      order: 2;
-      height: clamp(72px, 14vh, 140px);
-      width: 100%;
-      pointer-events: none;
-    }
-    .hero-copy .line2 { order: 3; }
-    .hero-copy.is-over-film {
+      gap: 14px;
       color: var(--cream);
       text-shadow: 0 1px 18px rgba(0,0,0,0.35);
+      transition: opacity 0.45s var(--ease-out-quart);
+    }
+    .hero-copy .f-mark {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      display: block;
+      filter: brightness(0) invert(1);
+      margin-bottom: 4px;
     }
     .hero-copy.is-gone {
       opacity: 0;
+      pointer-events: none;
     }
     .hero-copy .line1 {
       font-family: var(--display);
@@ -290,16 +252,11 @@
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--ink);
-      text-shadow: none;
-      opacity: 0.55;
-      transition: opacity 0.35s var(--ease-out-quart), color 0.35s ease;
-      pointer-events: none;
-    }
-    body:not(.is-framed) .hint {
       color: var(--cream);
       text-shadow: 0 1px 10px rgba(0,0,0,0.4);
       opacity: 0.85;
+      transition: opacity 0.35s var(--ease-out-quart);
+      pointer-events: none;
     }
     .hint.is-hidden { opacity: 0; }
 
@@ -369,13 +326,15 @@
       font-weight: 400;
       color: var(--ink);
       text-decoration: none;
-      background: #ebe7e2;
-      border: none;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(26, 26, 26, 0.12);
       border-radius: 0;
       padding: 22px 48px;
       letter-spacing: 0.01em;
+      -webkit-backdrop-filter: saturate(140%) blur(12px);
+      backdrop-filter: saturate(140%) blur(12px);
       -webkit-tap-highlight-color: transparent;
-      transition: background 0.25s ease, transform 0.15s ease;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
       display: inline-block;
     }
     .post-cta em {
@@ -389,7 +348,10 @@
       font-size: 0.92em;
     }
     .post-cta:active { transform: scale(0.985); }
-    .post-cta:hover { background: #e4dfd9; }
+    .post-cta:hover {
+      background: rgba(255, 255, 255, 0.62);
+      border-color: rgba(0, 224, 145, 0.55);
+    }
 
     .after {
       min-height: 50vh;
@@ -444,7 +406,8 @@
       }
       .brand-fixed .wordmark { height: 22px; }
       .cta { padding: 10px 14px; font-size: 10px; }
-      .hero-copy { top: 50%; width: min(94vw, 920px); }
+      .hero-copy { top: 40%; width: min(94vw, 920px); gap: 10px; }
+      .hero-copy .f-mark { width: 34px; height: 34px; }
       .post-hero { padding: 64px 18px 88px; gap: 32px; }
       .logo-marquee__track { gap: 32px; }
       .logo-marquee figure { height: 40px; }
@@ -459,7 +422,7 @@
     }
   </style>
 </head>
-<body class="is-framed">
+<body>
   <div class="preview-badge">Preview · não é o site</div>
 
   <!-- Fixed overlays (do not scroll away with the video intro) -->
@@ -476,7 +439,7 @@
 
   <div class="scroll-track" id="track">
     <section class="stage" id="stage" aria-label="Hero Futuriza">
-      <div class="mask" id="mask" style="--mask-progress: 0">
+      <div class="mask" id="mask">
         <video
           id="heroVideo"
           src="video/hero.mp4"
@@ -492,8 +455,8 @@
       </div>
 
       <div class="hero-copy" id="heroCopy">
+        <img class="f-mark" src="brand/futuriza-symbol.png" alt="" width="42" height="42" />
         <div class="line1" id="line1">FASHION TECH</div>
-        <div class="film-gap" aria-hidden="true"></div>
         <div class="line2" id="line2">authority</div>
       </div>
 
@@ -558,7 +521,6 @@
 
   <script>
     (function () {
-      const mask = document.getElementById('mask');
       const track = document.getElementById('track');
       const hint = document.getElementById('hint');
       const video = document.getElementById('heroVideo');
@@ -598,17 +560,19 @@
       function apply() {
         ticking = false;
         const p = scrollProgress();
-        mask.style.setProperty('--mask-progress', p.toFixed(4));
-        hint.classList.toggle('is-hidden', p > 0.08);
+        hint.classList.toggle('is-hidden', p > 0.12);
 
-        // Headline wraps the small film; fades once the film has mostly filled.
-        const headlineGone = p > 0.72;
-        heroCopy.classList.toggle('is-gone', headlineGone);
-        heroCopy.classList.toggle('is-over-film', p > 0.45 && !headlineGone);
-        brandFixed.classList.toggle('is-visible', headlineGone);
+        // After scrolling through the sticky video stage, headline leaves;
+        // full Futuriza wordmark fades in above the fixed side menu.
+        const pastIntro = p > 0.78;
+        heroCopy.classList.toggle('is-gone', pastIntro);
+        brandFixed.classList.toggle('is-visible', pastIntro);
 
-        // Cream around the nested film at start → ink chrome; near full-bleed → light chrome
-        document.body.classList.toggle('is-framed', p < 0.55);
+        // White menu on video → black once we leave the sticky stage into cream
+        const stage = document.getElementById('stage');
+        const stageBottom = stage.getBoundingClientRect().bottom;
+        const pastVideo = stageBottom < innerHeight * 0.55;
+        document.body.classList.toggle('is-past-video', pastVideo);
       }
       function onScroll() {
         if (!ticking) {
