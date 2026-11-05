@@ -303,36 +303,96 @@
     }
     .hint.is-hidden { opacity: 0; }
 
-    /* Client logos — OUTSIDE the video stage / first fold */
-    .logos {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      align-items: center;
-      padding: 36px 24px 28px;
+    /* Second section — Vero post-hero layout: headline + logo marquee + light CTA */
+    .post-hero {
       background: var(--cream);
-      max-width: 920px;
-      margin: 0 auto;
+      color: var(--ink);
+      text-align: center;
+      padding: clamp(72px, 12vh, 140px) 24px clamp(88px, 14vh, 160px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(36px, 6vh, 64px);
     }
-    .logos figure {
+    .post-hero h2 {
+      font-family: var(--ui);
+      font-weight: 600;
+      font-size: clamp(26px, 4.2vw, 48px);
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      max-width: 18ch;
+      margin: 0;
+      color: var(--ink);
+    }
+    .logo-marquee {
+      width: min(100%, 980px);
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+      position: relative;
+    }
+    .logo-marquee__track {
+      display: flex;
+      width: max-content;
+      gap: 48px;
+      align-items: center;
+      animation: marquee-logos 42s linear infinite;
+      will-change: transform;
+    }
+    .logo-marquee__track:hover {
+      animation-play-state: paused;
+    }
+    .logo-marquee figure {
+      margin: 0;
+      flex: 0 0 auto;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 52px;
-      margin: 0;
     }
-    .logos img {
-      max-width: 100%;
+    .logo-marquee img {
       max-height: 40px;
+      max-width: 140px;
       width: auto;
       height: auto;
       object-fit: contain;
       filter: grayscale(1);
-      opacity: 0.78;
+      opacity: 0.72;
     }
+    @keyframes marquee-logos {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .post-cta {
+      font-family: var(--display);
+      font-size: clamp(18px, 2.4vw, 26px);
+      font-weight: 400;
+      color: var(--ink);
+      text-decoration: none;
+      background: #ebe7e2;
+      border: none;
+      border-radius: 0;
+      padding: 22px 48px;
+      letter-spacing: 0.01em;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.25s ease, transform 0.15s ease;
+      display: inline-block;
+    }
+    .post-cta em {
+      font-style: italic;
+      font-weight: 400;
+    }
+    .post-cta .caps {
+      font-style: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.92em;
+    }
+    .post-cta:active { transform: scale(0.985); }
+    .post-cta:hover { background: #e4dfd9; }
 
     .after {
-      min-height: 60vh;
+      min-height: 50vh;
       padding: 72px 24px 96px;
       background: var(--cream);
       color: var(--ink);
@@ -384,13 +444,12 @@
       }
       .brand-fixed .wordmark { height: 22px; }
       .cta { padding: 10px 14px; font-size: 10px; }
-      .hero-copy { top: 40%; width: min(94vw, 920px); }
-      .logos {
-        gap: 8px;
-        padding: 28px 16px 20px;
-      }
-      .logos figure { height: 40px; }
-      .logos img { max-height: 30px; }
+      .hero-copy { top: 50%; width: min(94vw, 920px); }
+      .post-hero { padding: 64px 18px 88px; gap: 32px; }
+      .logo-marquee__track { gap: 32px; }
+      .logo-marquee figure { height: 40px; }
+      .logo-marquee img { max-height: 32px; max-width: 110px; }
+      .post-cta { padding: 18px 32px; }
     }
 
     @media (max-width: 380px) {
@@ -442,25 +501,55 @@
     </section>
   </div>
 
-  <!-- Client logos: after the intro, not on the first fold, not inside the video mask -->
-  <div class="logos" aria-label="Clientes">
-    <figure><img src="logos/farm-rio.png" alt="Farm Rio" /></figure>
-    <figure><img src="logos/hering.png" alt="Hering" /></figure>
-    <figure><img src="logos/arezzo.png" alt="Arezzo" /></figure>
-    <figure><img src="logos/animale.png" alt="Animale" /></figure>
-  </div>
-
-  <section class="after" id="sobre">
-    <h2>Sobre</h2>
-    <p>Preview do hero em vídeo — tipografia, menu lateral e máscara de scroll no estilo da intro da Vero, com conteúdo Futuriza.</p>
+  <!-- Second section (Vero post-hero layout): headline + moving logos + light CTA -->
+  <section class="post-hero" id="sobre" aria-label="Sobre a Futuriza">
+    <h2>Futuriza is the fashion tech authority that turns brands into visual systems built for scale.</h2>
+    <div class="logo-marquee" aria-label="Clientes">
+      <div class="logo-marquee__track">
+          <figure><img src="logos/farm-rio.png" alt="Farm Rio" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/hering.png" alt="Hering" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/arezzo.png" alt="Arezzo" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/animale.png" alt="Animale" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/approve.png" alt="Approve" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/brandili.png" alt="Brandili" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/fico.png" alt="Fico" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/oasis.png" alt="Oasis" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/grupo-lunelli.png" alt="Grupo Lunelli" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/lez-a-lez.png" alt="Lez a Lez" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/santa-constancia.png" alt="Santa Constancia" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/amabilis.webp" alt="Amabilis" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/rovitex.webp" alt="Rovitex" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/hiatto.webp" alt="Hiatto" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/via-club.webp" alt="Via Club" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/toruss.webp" alt="Torus" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/farm-rio.png" alt="Farm Rio" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/hering.png" alt="Hering" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/arezzo.png" alt="Arezzo" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/animale.png" alt="Animale" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/approve.png" alt="Approve" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/brandili.png" alt="Brandili" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/fico.png" alt="Fico" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/oasis.png" alt="Oasis" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/grupo-lunelli.png" alt="Grupo Lunelli" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/lez-a-lez.png" alt="Lez a Lez" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/santa-constancia.png" alt="Santa Constancia" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/amabilis.webp" alt="Amabilis" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/rovitex.webp" alt="Rovitex" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/hiatto.webp" alt="Hiatto" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/via-club.webp" alt="Via Club" loading="lazy" decoding="async" /></figure>
+          <figure><img src="logos/toruss.webp" alt="Torus" loading="lazy" decoding="async" /></figure>
+      </div>
+    </div>
+    <a class="post-cta" href="#contato"><em>Começar</em> <span class="caps">agora</span></a>
   </section>
+
   <section class="after" id="servicos">
     <h2>Serviços</h2>
     <p>Seção placeholder do preview. O site de produção não é alterado por este experimento.</p>
   </section>
   <section class="after" id="cases">
     <h2>Cases</h2>
-    <p>Farm Rio, Hering, Arezzo, Animale — logos abaixo da intro, fora do efeito de scroll do vídeo.</p>
+    <p>Marcas no carrossel da segunda seção — fora do efeito de scroll do vídeo e fora da primeira dobra.</p>
   </section>
   <section class="after" id="contato">
     <h2>Contato</h2>
