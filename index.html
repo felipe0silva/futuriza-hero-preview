@@ -33,10 +33,14 @@
     }
     a { color: inherit; }
 
-    /* Tall track so sticky stage can scrub the mask */
+    /*
+      Sticky film stage is TRANSPARENT outside the video mask so section 2
+      (pulled up underneath) shows through as the film shrinks — no cream void.
+    */
     .scroll-track {
-      height: 200vh;
       position: relative;
+      /* stage 100vh + post-hero (~auto) with -100vh overlap + scrub room */
+      padding-bottom: 40vh;
     }
     .stage {
       position: sticky;
@@ -44,8 +48,15 @@
       height: 100vh;
       height: 100dvh;
       width: 100%;
-      overflow: hidden;
-      background: var(--cream);
+      overflow: visible;
+      background: transparent;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .stage .mask,
+    .stage .hero-copy,
+    .stage .hint {
+      pointer-events: auto;
     }
 
     /*
@@ -274,19 +285,27 @@
     }
     .hint.is-hidden { opacity: 0; }
 
-    /* Second section — closer under video; headline + 4-col logo marquee + CTA */
+    /*
+      Section 2 sits UNDER the sticky transparent stage (margin-top: -100vh)
+      so as the film shrinks, this block is already in sequence — no empty gap.
+    */
     .post-hero {
       background: var(--cream);
       color: var(--ink);
       text-align: center;
-      padding: clamp(20px, 3.5vh, 40px) 24px clamp(64px, 10vh, 120px);
-      margin-top: -4vh;
+      /* Pull under the 100vh sticky stage from the first paint */
+      margin-top: -100vh;
+      padding: clamp(18vh, 22vh, 26vh) 24px clamp(56px, 8vh, 96px);
+      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: clamp(28px, 4.5vh, 48px);
       position: relative;
-      z-index: 2;
+      z-index: 1;
+      box-sizing: border-box;
     }
     .post-hero h2 {
       font-family: var(--ui);
@@ -436,7 +455,11 @@
       .cta { padding: 10px 14px; font-size: 10px; }
       .hero-copy { top: 40%; width: min(94vw, 920px); gap: 10px; }
       .hero-copy .f-mark { width: 51px; height: 51px; }
-      .post-hero { padding: 16px 16px 72px; gap: 24px; margin-top: -2vh; }
+      .post-hero {
+        margin-top: -100vh;
+        padding: 18vh 16px 64px;
+        gap: 24px;
+      }
       .logo-marquee figure { height: 76px; padding: 0 6px; }
       .logo-marquee img { max-height: 56px; }
       .post-hero h2 .authority-mark { height: 0.95em; }
@@ -490,7 +513,6 @@
 
       <div class="hint" id="hint">Scroll</div>
     </section>
-  </div>
 
   <!-- Second section (Vero post-hero layout): headline + moving logos + light CTA -->
   <section class="post-hero" id="sobre" aria-label="Sobre a Futuriza">
@@ -533,6 +555,8 @@
     </div>
     <a class="post-cta" href="#contato"><em>Começar</em> <span class="caps">agora</span></a>
   </section>
+
+  </div>
 
   <section class="after" id="servicos">
     <h2>Serviços</h2>
@@ -588,20 +612,17 @@
       const mask = document.getElementById('mask');
       function apply() {
         ticking = false;
-        const p = scrollProgress();
-        // Shrink + vanish the full-bleed film
+        // Map early scroll to full shrink so section 2 is visible as film leaves
+        const raw = scrollProgress();
+        const p = clamp(raw / 0.55, 0, 1); // finish vanish by ~55% of track
         if (mask) mask.style.setProperty('--mask-progress', p.toFixed(4));
-        hint.classList.toggle('is-hidden', p > 0.08);
+        hint.classList.toggle('is-hidden', p > 0.06);
 
-        // Headline / F leave as film shrinks; full wordmark above side menu
-        const pastIntro = p > 0.55;
+        const pastIntro = p > 0.45;
         heroCopy.classList.toggle('is-gone', pastIntro);
         brandFixed.classList.toggle('is-visible', pastIntro);
 
-        // White on film → black once cream framing is strong / past the stage
-        const stage = document.getElementById('stage');
-        const stageBottom = stage.getBoundingClientRect().bottom;
-        const pastVideo = p > 0.28 || stageBottom < innerHeight * 0.55;
+        const pastVideo = p > 0.2;
         document.body.classList.toggle('is-past-video', pastVideo);
       }
       function onScroll() {
