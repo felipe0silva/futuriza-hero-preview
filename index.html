@@ -92,16 +92,9 @@
       height: 22px;
       width: auto;
       display: block;
-      filter: none;
-      mix-blend-mode: multiply;
-    }
-    .brand .word {
-      font-family: var(--ui);
-      font-size: 12px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-weight: 600;
-      color: var(--ink);
+      background: rgba(243,240,237,0.9);
+      padding: 6px 10px;
+      border-radius: 2px;
     }
 
     .cta {
@@ -114,11 +107,11 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
       padding: 11px 16px;
-      border: 1px solid rgba(0,0,0,0.35);
-      background: rgba(243,240,237,0.72);
+      border: 1px solid rgba(243,240,237,0.55);
+      background: rgba(26,26,26,0.35);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      color: var(--ink);
+      color: var(--cream);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       text-decoration: none;
@@ -137,17 +130,18 @@
       gap: 16px;
     }
     nav.side a {
-      color: var(--ink);
+      color: var(--cream);
       text-decoration: none;
       font-size: 11px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       font-family: var(--ui);
-      opacity: 0.72;
+      opacity: 0.88;
       display: flex;
       align-items: baseline;
       gap: 10px;
       -webkit-tap-highlight-color: transparent;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.55);
     }
     nav.side a:hover,
     nav.side a:focus-visible { opacity: 1; }
