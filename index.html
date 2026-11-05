@@ -48,7 +48,10 @@
       background: var(--cream);
     }
 
-    /* Vero MainHero-style scroll mask (recreated formula, not their CSS file) */
+    /*
+      Vero MainHero-style scroll mask (recreated formula).
+      At progress 0 → full-bleed. Shrink reveals cream framing later.
+    */
     .mask {
       --mask-progress: 0;
       --mask-scale-h: calc(1 - 0.3 * max(0, calc(var(--mask-progress) - 0.1)));
@@ -72,59 +75,115 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transform: scale(1.01);
+      object-position: center center;
+      transform: scale(1.02);
       display: block;
       background: #111;
     }
 
-    /* Chrome outside the mask so it stays usable as the video frames in */
-    .brand {
-      position: absolute;
-      top: max(20px, env(safe-area-inset-top));
+    /* Fixed chrome — stays for the whole intro / page scroll */
+    .chrome-fixed {
+      position: fixed;
+      z-index: 12;
+      pointer-events: none;
+    }
+    .chrome-fixed > * { pointer-events: auto; }
+
+    /* Full Futuriza mark: fades in ABOVE the fixed side menu after headline leaves */
+    .brand-fixed {
+      position: fixed;
       left: max(18px, env(safe-area-inset-left));
-      z-index: 6;
+      top: 50%;
+      /* Sit just above the vertical menu cluster */
+      transform: translateY(calc(-50% - 118px));
+      z-index: 13;
       display: flex;
       align-items: center;
       gap: 10px;
       text-decoration: none;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 0.7s var(--ease-out-quart),
+        visibility 0.7s,
+        filter 0.45s ease;
+      filter: drop-shadow(0 1px 10px rgba(0,0,0,0.35));
     }
-    .brand img {
-      height: 22px;
+    .brand-fixed.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .brand-fixed .wordmark {
+      height: 28px;
       width: auto;
+      max-width: min(46vw, 160px);
+      object-fit: contain;
       display: block;
-      background: rgba(243,240,237,0.9);
-      padding: 6px 10px;
-      border-radius: 2px;
+      /* Start over dark film briefly before framed cream — lift dark mark */
+      filter: brightness(0) invert(1);
+    }
+    body.is-framed .brand-fixed {
+      filter: none;
+    }
+    body.is-framed .brand-fixed .wordmark {
+      filter: none;
+      mix-blend-mode: multiply;
     }
 
+    /* Apple-style liquid glass CTA */
     .cta {
-      position: absolute;
+      position: fixed;
       top: max(16px, env(safe-area-inset-top));
       right: max(14px, env(safe-area-inset-right));
-      z-index: 6;
+      z-index: 14;
       font-family: var(--ui);
       font-size: 11px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      padding: 11px 16px;
-      border: 1px solid rgba(243,240,237,0.55);
-      background: rgba(26,26,26,0.35);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: var(--cream);
+      padding: 12px 18px;
+      border-radius: 980px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.42) 0%,
+          rgba(255, 255, 255, 0.18) 100%
+        );
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+      backdrop-filter: saturate(180%) blur(22px);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        inset 0 -0.5px 0 rgba(255, 255, 255, 0.12),
+        0 0.5px 1px rgba(0, 0, 0, 0.04);
+      color: rgba(255, 255, 255, 0.96);
+      text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.18);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       text-decoration: none;
       display: inline-block;
+      transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
     .cta:active { transform: scale(0.98); }
+    body.is-framed .cta {
+      border-color: rgba(255, 255, 255, 0.65);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.72) 0%,
+          rgba(255, 255, 255, 0.38) 100%
+        );
+      color: var(--ink);
+      text-shadow: none;
+    }
 
     nav.side {
-      position: absolute;
+      position: fixed;
       left: max(18px, env(safe-area-inset-left));
       top: 50%;
       transform: translateY(-50%);
-      z-index: 6;
+      z-index: 13;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -142,6 +201,7 @@
       gap: 10px;
       -webkit-tap-highlight-color: transparent;
       text-shadow: 0 1px 12px rgba(0,0,0,0.55);
+      transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.2s ease;
     }
     nav.side a:hover,
     nav.side a:focus-visible { opacity: 1; }
@@ -151,8 +211,12 @@
       font-variant-numeric: lining-nums;
       min-width: 1.1em;
     }
+    body.is-framed nav.side a {
+      color: var(--ink);
+      text-shadow: none;
+    }
 
-    /* Title over the masked video (cream text like Vero's beige-100 over media) */
+    /* Title over the video — clipped away with the mask on scroll */
     .hero-copy {
       position: absolute;
       left: 50%;
@@ -167,6 +231,10 @@
       align-items: center;
       color: var(--cream);
       text-shadow: 0 1px 18px rgba(0,0,0,0.35);
+      transition: opacity 0.35s var(--ease-out-quart);
+    }
+    .hero-copy.is-gone {
+      opacity: 0;
     }
     .hero-copy .line1 {
       font-family: var(--display);
@@ -192,7 +260,7 @@
 
     .hint {
       position: absolute;
-      bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px));
+      bottom: max(28px, calc(env(safe-area-inset-bottom) + 20px));
       left: 50%;
       transform: translateX(-50%);
       z-index: 6;
@@ -208,38 +276,36 @@
     }
     .hint.is-hidden { opacity: 0; }
 
+    /* Client logos — OUTSIDE the video stage / first fold */
     .logos {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 6;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 12px;
       align-items: center;
-      padding: 14px 18px calc(14px + env(safe-area-inset-bottom));
-      background: linear-gradient(to top, rgba(243,240,237,0.96) 55%, rgba(243,240,237,0));
+      padding: 36px 24px 28px;
+      background: var(--cream);
+      max-width: 920px;
+      margin: 0 auto;
     }
     .logos figure {
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 44px;
+      height: 52px;
       margin: 0;
     }
     .logos img {
       max-width: 100%;
-      max-height: 36px;
+      max-height: 40px;
       width: auto;
       height: auto;
       object-fit: contain;
       filter: grayscale(1);
-      opacity: 0.75;
+      opacity: 0.78;
     }
 
     .after {
-      min-height: 70vh;
+      min-height: 60vh;
       padding: 72px 24px 96px;
       background: var(--cream);
       color: var(--ink);
@@ -285,42 +351,45 @@
         letter-spacing: 0.14em;
         gap: 7px;
       }
-      .brand .word { display: none; }
-      .brand img { height: 20px; }
-      .cta { padding: 10px 12px; font-size: 10px; }
+      .brand-fixed {
+        left: max(12px, env(safe-area-inset-left));
+        transform: translateY(calc(-50% - 100px));
+      }
+      .brand-fixed .wordmark { height: 22px; }
+      .cta { padding: 10px 14px; font-size: 10px; }
       .hero-copy { top: 40%; width: min(94vw, 920px); }
       .logos {
-        gap: 4px;
-        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        gap: 8px;
+        padding: 28px 16px 20px;
       }
-      .logos figure { height: 36px; }
-      .logos img { max-height: 28px; }
-      .hint { bottom: max(70px, calc(env(safe-area-inset-bottom) + 58px)); }
+      .logos figure { height: 40px; }
+      .logos img { max-height: 30px; }
     }
 
     @media (max-width: 380px) {
       nav.side a span.label { display: none; }
       nav.side a .num { font-size: 12px; opacity: 0.7; }
+      .brand-fixed .wordmark { height: 20px; max-width: 120px; }
     }
   </style>
 </head>
 <body>
   <div class="preview-badge">Preview · não é o site</div>
 
+  <!-- Fixed overlays (do not scroll away with the video intro) -->
+  <a class="brand-fixed" id="brandFixed" href="#topo" aria-label="Futuriza">
+    <img class="wordmark" src="brand/logo-futuriza.png" alt="Futuriza" width="140" height="40" />
+  </a>
+  <a class="cta" href="#contato">Começar Agora</a>
+  <nav class="side" aria-label="Menu">
+    <a href="#sobre"><span class="num">I</span><span class="label">Sobre</span></a>
+    <a href="#servicos"><span class="num">II</span><span class="label">Serviços</span></a>
+    <a href="#cases"><span class="num">III</span><span class="label">Cases</span></a>
+    <a href="#contato"><span class="num">IV</span><span class="label">Contato</span></a>
+  </nav>
+
   <div class="scroll-track" id="track">
     <section class="stage" id="stage" aria-label="Hero Futuriza">
-      <a class="brand" href="#topo" aria-label="Futuriza">
-        <img src="brand/logo-futuriza.png" alt="Futuriza" width="120" height="22" />
-      </a>
-      <a class="cta" href="#contato">Começar Agora</a>
-
-      <nav class="side" aria-label="Menu">
-        <a href="#sobre"><span class="num">I</span><span class="label">Sobre</span></a>
-        <a href="#servicos"><span class="num">II</span><span class="label">Serviços</span></a>
-        <a href="#cases"><span class="num">III</span><span class="label">Cases</span></a>
-        <a href="#contato"><span class="num">IV</span><span class="label">Contato</span></a>
-      </nav>
-
       <div class="mask" id="mask" style="--mask-progress: 0">
         <video
           id="heroVideo"
@@ -342,14 +411,15 @@
       </div>
 
       <div class="hint" id="hint">Scroll</div>
-
-      <div class="logos" aria-label="Clientes">
-        <figure><img src="logos/farm-rio.png" alt="Farm Rio" /></figure>
-        <figure><img src="logos/hering.png" alt="Hering" /></figure>
-        <figure><img src="logos/arezzo.png" alt="Arezzo" /></figure>
-        <figure><img src="logos/animale.png" alt="Animale" /></figure>
-      </div>
     </section>
+  </div>
+
+  <!-- Client logos: after the intro, not on the first fold, not inside the video mask -->
+  <div class="logos" aria-label="Clientes">
+    <figure><img src="logos/farm-rio.png" alt="Farm Rio" /></figure>
+    <figure><img src="logos/hering.png" alt="Hering" /></figure>
+    <figure><img src="logos/arezzo.png" alt="Arezzo" /></figure>
+    <figure><img src="logos/animale.png" alt="Animale" /></figure>
   </div>
 
   <section class="after" id="sobre">
@@ -362,7 +432,7 @@
   </section>
   <section class="after" id="cases">
     <h2>Cases</h2>
-    <p>Farm Rio, Hering, Arezzo, Animale e outras marcas no primeiro fold.</p>
+    <p>Farm Rio, Hering, Arezzo, Animale — logos abaixo da intro, fora do efeito de scroll do vídeo.</p>
   </section>
   <section class="after" id="contato">
     <h2>Contato</h2>
@@ -377,6 +447,8 @@
       const video = document.getElementById('heroVideo');
       const line1 = document.getElementById('line1');
       const line2 = document.getElementById('line2');
+      const heroCopy = document.getElementById('heroCopy');
+      const brandFixed = document.getElementById('brandFixed');
 
       /** Match "authority" rendered width to "FASHION TECH". */
       function fitAuthorityWidth() {
@@ -410,7 +482,15 @@
         ticking = false;
         const p = scrollProgress();
         mask.style.setProperty('--mask-progress', p.toFixed(4));
-        hint.classList.toggle('is-hidden', p > 0.12);
+        hint.classList.toggle('is-hidden', p > 0.1);
+
+        // Headline is clipped by the mask; fade brand once it's effectively gone.
+        const headlineGone = p > 0.42;
+        heroCopy.classList.toggle('is-gone', headlineGone);
+        brandFixed.classList.toggle('is-visible', headlineGone);
+
+        // Cream framing around video → switch chrome to ink for contrast
+        document.body.classList.toggle('is-framed', p > 0.28);
       }
       function onScroll() {
         if (!ticking) {
@@ -424,8 +504,10 @@
 
       // iPhone Safari autoplay: muted + playsinline; nudge play on gesture if blocked
       function tryPlay() {
-        const p = video.play();
-        if (p && typeof p.catch === 'function') p.catch(function () {});
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(function () {});
+        }
       }
       tryPlay();
       document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
