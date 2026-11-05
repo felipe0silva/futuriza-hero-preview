@@ -317,7 +317,6 @@
     .logo-marquee {
       --marquee-w: min(92vw, 900px);
       --cols: 4;
-      --logo-gap: 20px;
       width: var(--marquee-w);
       overflow: hidden;
       mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
@@ -327,7 +326,7 @@
     .logo-marquee__track {
       display: flex;
       width: max-content;
-      gap: var(--logo-gap); /* exactly 20px between logos */
+      gap: 0; /* spacing unchanged — only max-height increased */
       align-items: center;
       animation: marquee-logos 36s linear infinite;
       will-change: transform;
@@ -337,23 +336,22 @@
     }
     .logo-marquee figure {
       margin: 0;
-      /* 4 columns visible: width accounts for 3 gaps of 20px */
-      flex: 0 0 calc((var(--marquee-w) - (var(--cols) - 1) * var(--logo-gap)) / var(--cols));
-      width: calc((var(--marquee-w) - (var(--cols) - 1) * var(--logo-gap)) / var(--cols));
+      flex: 0 0 calc(var(--marquee-w) / var(--cols));
+      width: calc(var(--marquee-w) / var(--cols));
       height: 201px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
+      padding: 0 10px;
     }
     .logo-marquee img {
       max-height: 201px;
-      max-width: 100%;
+      max-width: 92%;
       width: auto;
       height: auto;
       object-fit: contain;
       filter: grayscale(1);
-      opacity: 0.85;
+      opacity: 0.8;
     }
     @keyframes marquee-logos {
       from { transform: translateX(0); }
@@ -453,8 +451,8 @@
         gap: 24px;
         min-height: 85vh;
       }
-      .logo-marquee figure { height: 140px; padding: 0; }
-      .logo-marquee img { max-height: 140px; }
+      .logo-marquee figure { height: 160px; padding: 0 6px; }
+      .logo-marquee img { max-height: 160px; }
       .post-hero h2 .authority-mark { height: 0.95em; }
       .post-cta { padding: 18px 32px; }
     }
