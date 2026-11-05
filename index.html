@@ -52,10 +52,15 @@
       Vero MainHero-style scroll mask (recreated formula).
       At progress 0 → full-bleed. Shrink reveals cream framing later.
     */
+    /*
+      Vero-style intro: video STARTS SMALL (nested rectangle in cream) then EXPANDS
+      to full-bleed as scroll progress goes 0 → 1. (Not shrink-from-full.)
+    */
     .mask {
       --mask-progress: 0;
-      --mask-scale-h: calc(1 - 0.3 * max(0, calc(var(--mask-progress) - 0.1)));
-      --mask-scale-v: calc(1 - 0.3 * var(--mask-progress));
+      /* start ~26% × 16%, end 100% × 100% */
+      --mask-scale-h: calc(0.26 + 0.74 * var(--mask-progress));
+      --mask-scale-v: calc(0.16 + 0.84 * var(--mask-progress));
       position: absolute;
       inset: 0;
       width: 100%;
@@ -66,6 +71,7 @@
         calc(50% + 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v)),
         calc(50% - 50% * var(--mask-scale-h)) calc(50% + 50% * var(--mask-scale-v))
       );
+      transition: clip-path 0.05s linear;
       will-change: clip-path;
       background: #0a0a0a;
     }
@@ -121,15 +127,13 @@
       max-width: min(46vw, 160px);
       object-fit: contain;
       display: block;
-      /* Start over dark film briefly before framed cream — lift dark mark */
-      filter: brightness(0) invert(1);
-    }
-    body.is-framed .brand-fixed {
-      filter: none;
-    }
-    body.is-framed .brand-fixed .wordmark {
-      filter: none;
+      /* Appears after expand — usually still cream margins or transitioning */
       mix-blend-mode: multiply;
+      filter: none;
+    }
+    body:not(.is-framed) .brand-fixed .wordmark {
+      mix-blend-mode: normal;
+      filter: brightness(0) invert(1);
     }
 
     /* Apple-style liquid glass CTA */
@@ -189,7 +193,7 @@
       gap: 16px;
     }
     nav.side a {
-      color: var(--cream);
+      color: var(--ink);
       text-decoration: none;
       font-size: 11px;
       letter-spacing: 0.18em;
@@ -200,7 +204,7 @@
       align-items: baseline;
       gap: 10px;
       -webkit-tap-highlight-color: transparent;
-      text-shadow: 0 1px 12px rgba(0,0,0,0.55);
+      text-shadow: none;
       transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.2s ease;
     }
     nav.side a:hover,
@@ -211,27 +215,45 @@
       font-variant-numeric: lining-nums;
       min-width: 1.1em;
     }
-    body.is-framed nav.side a {
-      color: var(--ink);
-      text-shadow: none;
+    body:not(.is-framed) nav.side a {
+      color: var(--cream);
+      text-shadow: 0 1px 12px rgba(0,0,0,0.55);
     }
 
     /* Title over the video — clipped away with the mask on scroll */
+    /*
+      Headline lives OUTSIDE the video mask so it stays on the cream page while
+      the small film expands underneath (Vero nests the frame in the typography).
+      It fades out once the film has mostly filled the viewport.
+    */
     .hero-copy {
       position: absolute;
       left: 50%;
-      top: 42%;
+      top: 50%;
       transform: translate(-50%, -50%);
-      z-index: 4;
+      z-index: 5;
       text-align: center;
       pointer-events: none;
       width: min(92vw, 920px);
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 0;
+      color: var(--ink);
+      text-shadow: none;
+      transition: opacity 0.45s var(--ease-out-quart), color 0.35s ease;
+    }
+    .hero-copy .line1 { order: 1; }
+    .hero-copy .film-gap {
+      order: 2;
+      height: clamp(72px, 14vh, 140px);
+      width: 100%;
+      pointer-events: none;
+    }
+    .hero-copy .line2 { order: 3; }
+    .hero-copy.is-over-film {
       color: var(--cream);
       text-shadow: 0 1px 18px rgba(0,0,0,0.35);
-      transition: opacity 0.35s var(--ease-out-quart);
     }
     .hero-copy.is-gone {
       opacity: 0;
@@ -268,11 +290,16 @@
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
+      color: var(--ink);
+      text-shadow: none;
+      opacity: 0.55;
+      transition: opacity 0.35s var(--ease-out-quart), color 0.35s ease;
+      pointer-events: none;
+    }
+    body:not(.is-framed) .hint {
       color: var(--cream);
       text-shadow: 0 1px 10px rgba(0,0,0,0.4);
       opacity: 0.85;
-      transition: opacity 0.35s var(--ease-out-quart);
-      pointer-events: none;
     }
     .hint.is-hidden { opacity: 0; }
 
@@ -373,7 +400,7 @@
     }
   </style>
 </head>
-<body>
+<body class="is-framed">
   <div class="preview-badge">Preview · não é o site</div>
 
   <!-- Fixed overlays (do not scroll away with the video intro) -->
@@ -403,11 +430,12 @@
           disablepictureinpicture
           aria-label="Filme fashion Futuriza — intro"
         ></video>
+      </div>
 
-        <div class="hero-copy" id="heroCopy">
-          <div class="line1" id="line1">FASHION TECH</div>
-          <div class="line2" id="line2">authority</div>
-        </div>
+      <div class="hero-copy" id="heroCopy">
+        <div class="line1" id="line1">FASHION TECH</div>
+        <div class="film-gap" aria-hidden="true"></div>
+        <div class="line2" id="line2">authority</div>
       </div>
 
       <div class="hint" id="hint">Scroll</div>
@@ -482,15 +510,16 @@
         ticking = false;
         const p = scrollProgress();
         mask.style.setProperty('--mask-progress', p.toFixed(4));
-        hint.classList.toggle('is-hidden', p > 0.1);
+        hint.classList.toggle('is-hidden', p > 0.08);
 
-        // Headline is clipped by the mask; fade brand once it's effectively gone.
-        const headlineGone = p > 0.42;
+        // Headline wraps the small film; fades once the film has mostly filled.
+        const headlineGone = p > 0.72;
         heroCopy.classList.toggle('is-gone', headlineGone);
+        heroCopy.classList.toggle('is-over-film', p > 0.45 && !headlineGone);
         brandFixed.classList.toggle('is-visible', headlineGone);
 
-        // Cream framing around video → switch chrome to ink for contrast
-        document.body.classList.toggle('is-framed', p > 0.28);
+        // Cream around the nested film at start → ink chrome; near full-bleed → light chrome
+        document.body.classList.toggle('is-framed', p < 0.55);
       }
       function onScroll() {
         if (!ticking) {
