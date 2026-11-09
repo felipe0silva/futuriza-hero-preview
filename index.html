@@ -7,19 +7,38 @@
   <meta name="theme-color" content="#f3f0ed" />
   <title>Futuriza — Fashion Tech Authority (hero video preview)</title>
   <!--
-    Typography: Vero uses Louize Display (licensed). Substitute = Instrument Serif
-    (Google Fonts), a high-contrast editorial display serif with italic — legal webfont.
+    Hero title: Bella Fashion (script) + Mightiest (high-contrast serif), self-hosted.
+    Body/display: Instrument Serif kept as --display for section copy (CDN).
+    Bella Fashion & Mightiest = personal-use licenses; commercial needs paid license.
   -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <style>
+    @font-face {
+      font-family: "Bella Fashion";
+      src: url("fonts/BellaFashion.woff2") format("woff2"),
+           url("fonts/BellaFashion.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Mightiest";
+      src: url("fonts/Mightiest.woff2") format("woff2"),
+           url("fonts/Mightiest.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
     :root {
       --cream: #f3f0ed;
       --ink: #1a1a1a;
       --muted: #6b6560;
       --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
       --display: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --hero-script: "Bella Fashion", "Great Vibes", cursive;
+      --hero-serif: "Mightiest", "Bodoni Moda", "Didot", "Playfair Display", serif;
       --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -237,25 +256,27 @@
       pointer-events: none;
     }
     .hero-copy .line1 {
-      font-family: var(--display);
-      font-size: clamp(36px, 8.2vw, 104px);
-      line-height: 0.88;
-      letter-spacing: 0.02em;
+      font-family: var(--hero-script);
+      font-size: clamp(40px, 9.5vw, 118px);
+      line-height: 0.95;
+      letter-spacing: 0.01em;
       font-weight: 400;
-      text-transform: uppercase;
+      font-style: normal;
+      text-transform: none;
       white-space: nowrap;
     }
     .hero-copy .line2 {
-      font-family: var(--display);
-      font-size: clamp(36px, 8.2vw, 104px);
-      line-height: 0.9;
-      font-style: italic;
+      font-family: var(--hero-serif);
+      font-size: clamp(28px, 6.4vw, 86px);
+      line-height: 0.95;
+      font-style: normal;
       font-weight: 400;
-      letter-spacing: 0.01em;
-      margin-top: -0.12em;
+      letter-spacing: 0.04em;
+      margin-top: 0.02em;
       white-space: nowrap;
-      transform-origin: top center;
+      transform-origin: center center;
       display: inline-block;
+      text-transform: none;
     }
 
     .hint {
@@ -427,15 +448,125 @@
       pointer-events: none;
     }
 
-    @media (max-width: 720px) {
+    /* Hamburger — same square glass language as .cta; mobile only */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: max(16px, env(safe-area-inset-top));
+      left: max(14px, env(safe-area-inset-left));
+      z-index: 16;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 0;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.16);
+      -webkit-backdrop-filter: saturate(160%) blur(18px);
+      backdrop-filter: saturate(160%) blur(18px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      color: #fff;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+    .menu-toggle:hover {
+      border-color: rgba(0, 224, 145, 0.7);
+      background: rgba(255, 255, 255, 0.22);
+    }
+    .menu-toggle:active { transform: scale(0.99); }
+    body.is-past-video .menu-toggle {
+      border-color: rgba(26, 26, 26, 0.18);
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--ink);
+      -webkit-backdrop-filter: saturate(160%) blur(14px);
+      backdrop-filter: saturate(160%) blur(14px);
+    }
+    .menu-toggle__icon {
+      display: block;
+      width: 18px;
+      height: 12px;
+      position: relative;
+    }
+    .menu-toggle__icon span {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1.5px;
+      background: currentColor;
+      transition: transform 0.25s ease, opacity 0.2s ease, top 0.25s ease;
+    }
+    .menu-toggle__icon span:nth-child(1) { top: 0; }
+    .menu-toggle__icon span:nth-child(2) { top: 5px; }
+    .menu-toggle__icon span:nth-child(3) { top: 10px; }
+    .menu-toggle[aria-expanded="true"] .menu-toggle__icon span:nth-child(1) {
+      top: 5px; transform: rotate(45deg);
+    }
+    .menu-toggle[aria-expanded="true"] .menu-toggle__icon span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-toggle[aria-expanded="true"] .menu-toggle__icon span:nth-child(3) {
+      top: 5px; transform: rotate(-45deg);
+    }
+
+    .nav-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      background: rgba(10, 10, 10, 0.35);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    body.nav-open .nav-backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle { display: inline-flex; }
+      .nav-backdrop { display: block; }
       nav.side {
-        left: max(12px, env(safe-area-inset-left));
-        gap: 12px;
+        left: max(14px, env(safe-area-inset-left));
+        top: max(72px, calc(env(safe-area-inset-top) + 60px));
+        transform: none;
+        gap: 0;
+        min-width: min(72vw, 260px);
+        padding: 8px 0;
+        border-radius: 0;
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        background: rgba(255, 255, 255, 0.16);
+        -webkit-backdrop-filter: saturate(160%) blur(18px);
+        backdrop-filter: saturate(160%) blur(18px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+      body.nav-open nav.side {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      body.is-past-video nav.side {
+        border-color: rgba(26, 26, 26, 0.18);
+        background: rgba(255, 255, 255, 0.72);
       }
       nav.side a {
-        font-size: 10px;
-        letter-spacing: 0.14em;
-        gap: 7px;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        gap: 12px;
+        padding: 14px 18px;
+        text-shadow: none;
+      }
+      body:not(.is-past-video) nav.side a {
+        color: #fff;
+        text-shadow: 0 1px 12px rgba(0,0,0,0.35);
       }
       .brand-fixed {
         left: max(12px, env(safe-area-inset-left));
@@ -445,21 +576,26 @@
       .cta { padding: 10px 14px; font-size: 10px; }
       .hero-copy { top: 40%; width: min(94vw, 920px); gap: 10px; }
       .hero-copy .f-mark { width: 51px; height: 51px; }
+      .hero-copy .line1 { font-size: clamp(36px, 11vw, 64px); }
       .post-hero {
         margin-top: 0;
         padding: 40px 16px 72px;
         gap: 24px;
         min-height: 85vh;
       }
-      .logo-marquee figure { height: 160px; padding: 0 6px; }
-      .logo-marquee img { max-height: 160px; }
+      /* Keep logo max-height 201px; only shrink the figure slot slightly on tiny screens via padding */
+      .logo-marquee figure { height: 201px; padding: 0 6px; }
+      .logo-marquee img { max-height: 201px; }
       .post-hero h2 .authority-mark { height: 0.95em; }
       .post-cta { padding: 18px 32px; }
+      .post-hero h2 {
+        max-width: 28ch;
+        font-size: clamp(22px, 5.6vw, 32px);
+        line-height: 1.25;
+      }
     }
 
     @media (max-width: 380px) {
-      nav.side a span.label { display: none; }
-      nav.side a .num { font-size: 12px; opacity: 0.7; }
       .brand-fixed .wordmark { height: 20px; max-width: 120px; }
     }
   </style>
@@ -471,8 +607,12 @@
   <a class="brand-fixed" id="brandFixed" href="#topo" aria-label="Futuriza">
     <img class="wordmark" src="brand/logo-futuriza.png" alt="Futuriza" width="140" height="40" />
   </a>
+  <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-controls="sideNav" aria-expanded="false">
+    <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span><span></span></span>
+  </button>
+  <div class="nav-backdrop" id="navBackdrop" hidden></div>
   <a class="cta" href="#contato">Começar Agora</a>
-  <nav class="side" aria-label="Menu">
+  <nav class="side" id="sideNav" aria-label="Menu">
     <a href="#sobre"><span class="num">I</span><span class="label">Sobre</span></a>
     <a href="#servicos"><span class="num">II</span><span class="label">Serviços</span></a>
     <a href="#cases"><span class="num">III</span><span class="label">Cases</span></a>
@@ -498,7 +638,7 @@
 
       <div class="hero-copy" id="heroCopy">
         <img class="f-mark" src="brand/futuriza-symbol.png" alt="" width="63" height="63" />
-        <div class="line1" id="line1">FASHION TECH</div>
+        <div class="line1" id="line1">Fashion Tech</div>
         <div class="line2" id="line2">authority</div>
       </div>
 
@@ -572,14 +712,25 @@
       const heroCopy = document.getElementById('heroCopy');
       const brandFixed = document.getElementById('brandFixed');
 
-      /** Match "authority" rendered width to "FASHION TECH". */
+      /** Match "authority" rendered width to "Fashion Tech" via font-size. */
       function fitAuthorityWidth() {
         line2.style.transform = 'none';
-        line2.style.fontSize = getComputedStyle(line1).fontSize;
-        const w1 = line1.getBoundingClientRect().width;
+        line2.style.fontSize = '';
+        const target = line1.getBoundingClientRect().width;
+        if (target < 2) return;
+        // Binary search font-size so Mightiest width == Bella Fashion width
+        let lo = 8, hi = 200;
+        for (let i = 0; i < 18; i++) {
+          const mid = (lo + hi) / 2;
+          line2.style.fontSize = mid + 'px';
+          const w = line2.getBoundingClientRect().width;
+          if (w < target) lo = mid; else hi = mid;
+        }
+        line2.style.fontSize = hi + 'px';
+        // Final micro scale if still a pixel off
         const w2 = line2.getBoundingClientRect().width;
-        if (w2 > 1 && w1 > 1) {
-          line2.style.transform = 'scaleX(' + (w1 / w2) + ')';
+        if (w2 > 1) {
+          line2.style.transform = 'scaleX(' + (target / w2) + ')';
         }
       }
       fitAuthorityWidth();
@@ -587,6 +738,54 @@
         document.fonts.ready.then(fitAuthorityWidth).catch(function () {});
       }
       addEventListener('resize', fitAuthorityWidth);
+
+      /* Mobile hamburger drawer */
+      (function setupNav() {
+        const toggle = document.getElementById('menuToggle');
+        const nav = document.getElementById('sideNav');
+        const backdrop = document.getElementById('navBackdrop');
+        if (!toggle || !nav) return;
+        const links = Array.prototype.slice.call(nav.querySelectorAll('a'));
+
+        function setOpen(open) {
+          document.body.classList.toggle('nav-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+          if (backdrop) {
+            if (open) backdrop.removeAttribute('hidden');
+            else backdrop.setAttribute('hidden', '');
+          }
+          if (open) {
+            const first = links[0];
+            if (first) first.focus();
+          } else {
+            toggle.focus();
+          }
+        }
+        function isOpen() { return document.body.classList.contains('nav-open'); }
+        function close() { if (isOpen()) setOpen(false); }
+
+        toggle.addEventListener('click', function () { setOpen(!isOpen()); });
+        if (backdrop) backdrop.addEventListener('click', close);
+        links.forEach(function (a) { a.addEventListener('click', close); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') close();
+          if (!isOpen() || e.key !== 'Tab') return;
+          const focusables = [toggle].concat(links);
+          const i = focusables.indexOf(document.activeElement);
+          if (e.shiftKey && (i <= 0)) {
+            e.preventDefault();
+            focusables[focusables.length - 1].focus();
+          } else if (!e.shiftKey && (i === focusables.length - 1)) {
+            e.preventDefault();
+            focusables[0].focus();
+          }
+        });
+        // Desktop resize: close drawer so side nav returns to fixed column
+        addEventListener('resize', function () {
+          if (innerWidth > 768) close();
+        });
+      })();
 
       function clamp(n, a, b) { return Math.min(b, Math.max(a, n)); }
 
