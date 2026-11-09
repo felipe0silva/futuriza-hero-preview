@@ -335,6 +335,13 @@
       color: var(--ink);
       /* Target ≤3 lines for the approved English sentence */
     }
+    .post-hero h2 mark.hl {
+      background: #00E091;
+      color: #000;
+      padding: 0 0.12em;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+    }
     .post-hero h2 .authority-mark {
       display: inline-block;
       height: 0.92em;
@@ -686,7 +693,7 @@
   <!-- Second section (Vero post-hero layout): headline + moving logos + light CTA -->
   <section class="post-hero" id="sobre" aria-label="Sobre a Futuriza">
     <img class="post-hero-logo" src="brand/logo-futuriza.png" alt="Futuriza" />
-    <h2>A fashion tech that generates photos, videos, and e-commerce modules with AI for iconic fashion brands.</h2>
+    <h2>A fashion tech that generates <mark class="hl">photos</mark>, <mark class="hl">videos</mark>, and <mark class="hl">e-commerce plugins</mark> with AI for iconic fashion brands.</h2>
     <div class="logo-marquee" aria-label="Clientes">
       <div class="logo-marquee__track">
           <figure><img src="logos/farm-rio.png" alt="Farm Rio" loading="lazy" decoding="async" /></figure>
