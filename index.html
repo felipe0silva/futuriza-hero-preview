@@ -617,20 +617,24 @@
       .hero-copy .line1 { padding-top: 0.06em; }
       .hero-copy .line2 { margin-top: -0.16em; }
       .hero-copy .line1 { font-size: clamp(36px, 11vw, 64px); }
-      /* Start under the film immediately — no cream void while video shrinks */
+      /* Section 2 stays in flow; JS syncs video bottom to its top (no cream gap).
+         Keep margin 0 so the sticky stage runway still works on iPhone. */
       .post-hero {
-        margin-top: -42vh;
+        margin-top: 0;
         padding: 40px 16px 72px;
         gap: 24px;
         min-height: 85vh;
       }
-      /* Sticky stage still full-bleed at rest; cream only behind the mask */
       .stage {
         background: transparent;
       }
-      /* Keep logo max-height 201px; only shrink the figure slot slightly on tiny screens via padding */
-      .logo-marquee figure { height: 201px; padding: 0 6px; }
-      .logo-marquee img { max-height: 201px; }
+      /* Client logos 2× on mobile only */
+      .logo-marquee {
+        --marquee-w: min(96vw, 900px);
+        --cols: 2;
+      }
+      .logo-marquee figure { height: 402px; padding: 0 8px; }
+      .logo-marquee img { max-height: 402px; max-width: 96%; }
       .post-hero h2 .authority-mark { height: 0.95em; }
       .post-cta { padding: 18px 32px; }
       .post-hero h2 {
@@ -876,9 +880,15 @@
         if (mqMobile.matches && postHero && mask) {
           // Mobile: video bottom tracks section 2 top — no cream gap between them
           const top = postHero.getBoundingClientRect().top;
-          const fill = clamp(top / innerHeight, 0.12, 1);
-          // mask height = 100% * (1 - 0.88*p)  →  p = (1 - fill) / 0.88
-          p = clamp((1 - fill) / 0.88, 0, 1);
+          const vh = innerHeight;
+          if (top >= vh - 1) {
+            // Still below the fold → keep full-bleed film
+            p = 0;
+          } else {
+            const fill = clamp(top / vh, 0.12, 1);
+            // mask height = 100% * (1 - 0.88*p)  →  p = (1 - fill) / 0.88
+            p = clamp((1 - fill) / 0.88, 0, 1);
+          }
         } else {
           // Desktop: original scrub curve
           p = clamp(raw / 0.65, 0, 1);
