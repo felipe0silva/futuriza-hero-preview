@@ -47,7 +47,8 @@
       background: var(--cream);
       color: var(--ink);
       font-family: var(--display);
-      overflow-x: hidden;
+      /* clip (not hidden) — overflow-x:hidden on body breaks position:sticky on iOS */
+      overflow-x: clip;
       -webkit-text-size-adjust: 100%;
     }
     a { color: inherit; }
@@ -881,17 +882,45 @@
           // Mobile: video bottom tracks section 2 top — no cream gap between them
           const top = postHero.getBoundingClientRect().top;
           const vh = innerHeight;
+          const stage = document.getElementById('stage');
           if (top >= vh - 1) {
-            // Still below the fold → keep full-bleed film
             p = 0;
           } else {
             const fill = clamp(top / vh, 0.12, 1);
-            // mask height = 100% * (1 - 0.88*p)  →  p = (1 - fill) / 0.88
             p = clamp((1 - fill) / 0.88, 0, 1);
+          }
+          // If sticky failed (stage scrolled away), pin stage to viewport during scrub
+          if (stage) {
+            const sr = stage.getBoundingClientRect();
+            if (raw < 0.98 && sr.top < -1) {
+              stage.style.position = 'fixed';
+              stage.style.top = '0';
+              stage.style.left = '0';
+              stage.style.right = '0';
+              stage.style.width = '100%';
+              stage.style.height = '100vh';
+              stage.style.height = '100dvh';
+            } else if (raw >= 0.98 || top <= 0) {
+              stage.style.position = '';
+              stage.style.top = '';
+              stage.style.left = '';
+              stage.style.right = '';
+              stage.style.width = '';
+              stage.style.height = '';
+            }
           }
         } else {
           // Desktop: original scrub curve
           p = clamp(raw / 0.65, 0, 1);
+          const stage = document.getElementById('stage');
+          if (stage) {
+            stage.style.position = '';
+            stage.style.top = '';
+            stage.style.left = '';
+            stage.style.right = '';
+            stage.style.width = '';
+            stage.style.height = '';
+          }
         }
         if (mask) mask.style.setProperty('--mask-progress', p.toFixed(4));
         hint.classList.toggle('is-hidden', p > 0.05);
