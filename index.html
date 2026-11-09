@@ -623,20 +623,21 @@
          Keep margin 0 so the sticky stage runway still works on iPhone. */
       .post-hero {
         margin-top: 0;
-        padding: 40px 16px 72px;
-        gap: 24px;
-        min-height: 85vh;
+        padding: 40px 16px 56px;
+        gap: 20px;
+        min-height: 0;
       }
       .stage {
         background: transparent;
       }
       /* Client logos 2× on mobile only */
+      /* Client logos on mobile: at least 2 whole tiles visible, compact height */
       .logo-marquee {
         --marquee-w: min(96vw, 900px);
-        --cols: 2;
+        --cols: 2.6;
       }
-      .logo-marquee figure { height: 402px; padding: 0 8px; }
-      .logo-marquee img { max-height: 402px; max-width: 96%; }
+      .logo-marquee figure { height: 120px; padding: 0 6px; }
+      .logo-marquee img { max-height: 120px; max-width: 92%; }
       .post-hero h2 .authority-mark { height: 0.95em; }
       .post-cta { padding: 18px 32px; }
       .post-hero h2 {
