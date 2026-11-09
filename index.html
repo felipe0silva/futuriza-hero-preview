@@ -617,11 +617,16 @@
       .hero-copy .line1 { padding-top: 0.06em; }
       .hero-copy .line2 { margin-top: -0.16em; }
       .hero-copy .line1 { font-size: clamp(36px, 11vw, 64px); }
+      /* Start under the film immediately — no cream void while video shrinks */
       .post-hero {
-        margin-top: 0;
+        margin-top: -42vh;
         padding: 40px 16px 72px;
         gap: 24px;
         min-height: 85vh;
+      }
+      /* Sticky stage still full-bleed at rest; cream only behind the mask */
+      .stage {
+        background: transparent;
       }
       /* Keep logo max-height 201px; only shrink the figure slot slightly on tiny screens via padding */
       .logo-marquee figure { height: 201px; padding: 0 6px; }
@@ -862,11 +867,22 @@
 
       let ticking = false;
       const mask = document.getElementById('mask');
+      const postHero = document.querySelector('.post-hero');
+      const mqMobile = window.matchMedia('(max-width: 768px)');
       function apply() {
         ticking = false;
         const raw = scrollProgress();
-        // Finish film shrink as section 2 climbs into the lower viewport
-        const p = clamp(raw / 0.65, 0, 1);
+        let p;
+        if (mqMobile.matches && postHero && mask) {
+          // Mobile: video bottom tracks section 2 top — no cream gap between them
+          const top = postHero.getBoundingClientRect().top;
+          const fill = clamp(top / innerHeight, 0.12, 1);
+          // mask height = 100% * (1 - 0.88*p)  →  p = (1 - fill) / 0.88
+          p = clamp((1 - fill) / 0.88, 0, 1);
+        } else {
+          // Desktop: original scrub curve
+          p = clamp(raw / 0.65, 0, 1);
+        }
         if (mask) mask.style.setProperty('--mask-progress', p.toFixed(4));
         hint.classList.toggle('is-hidden', p > 0.05);
 
