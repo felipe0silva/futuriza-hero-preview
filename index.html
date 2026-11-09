@@ -238,7 +238,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 14px;
+      gap: 0; /* spacing controlled per-child so F can breathe while title lockup stays tight */
       color: var(--cream);
       text-shadow: 0 1px 18px rgba(0,0,0,0.35);
       transition: opacity 0.45s var(--ease-out-quart);
@@ -249,7 +249,8 @@
       object-fit: contain;
       display: block;
       filter: brightness(0) invert(1);
-      margin-bottom: 4px;
+      /* More air above Fashion Tech so script ascenders don't kiss the F */
+      margin-bottom: 28px;
     }
     .hero-copy.is-gone {
       opacity: 0;
@@ -258,7 +259,7 @@
     .hero-copy .line1 {
       font-family: var(--hero-script);
       font-size: clamp(40px, 9.5vw, 118px);
-      line-height: 0.95;
+      line-height: 0.82;
       letter-spacing: 0.01em;
       font-weight: 400;
       font-style: normal;
@@ -268,11 +269,12 @@
     .hero-copy .line2 {
       font-family: var(--hero-serif);
       font-size: clamp(28px, 6.4vw, 86px);
-      line-height: 0.95;
+      line-height: 0.85;
       font-style: normal;
       font-weight: 400;
       letter-spacing: 0.04em;
-      margin-top: 0.02em;
+      /* Pull authority up into a tight lockup under Fashion Tech */
+      margin-top: -0.22em;
       white-space: nowrap;
       transform-origin: center center;
       display: inline-block;
@@ -575,8 +577,9 @@
       }
       .brand-fixed .wordmark { height: 22px; }
       .cta { padding: 10px 14px; font-size: 10px; }
-      .hero-copy { top: 40%; width: min(94vw, 920px); gap: 10px; }
-      .hero-copy .f-mark { width: 51px; height: 51px; }
+      .hero-copy { top: 40%; width: min(94vw, 920px); gap: 0; }
+      .hero-copy .f-mark { width: 51px; height: 51px; margin-bottom: 22px; }
+      .hero-copy .line2 { margin-top: -0.2em; }
       .hero-copy .line1 { font-size: clamp(36px, 11vw, 64px); }
       .post-hero {
         margin-top: 0;
