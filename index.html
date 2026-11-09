@@ -726,6 +726,26 @@
     <p>COMEÇAR AGORA aponta para cá neste preview.</p>
   </section>
 
+
+  <!-- Fixed overlays (do not scroll away with the video intro) -->
+  <a class="brand-fixed" id="brandFixed" href="#topo" aria-label="Futuriza">
+    <img class="wordmark" src="brand/logo-futuriza.png" alt="Futuriza" width="140" height="40" />
+  </a>
+  <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-controls="sideNav" aria-expanded="false">
+    <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span><span></span></span>
+  </button>
+  <div class="nav-backdrop" id="navBackdrop" hidden></div>
+  <a class="cta" href="#contato">Começar Agora</a>
+  <nav class="side" id="sideNav" aria-label="Menu">
+    <a class="nav-brand" href="#topo" aria-label="Futuriza">
+      <img src="brand/logo-futuriza.png" alt="Futuriza" width="140" height="40" />
+    </a>
+    <a href="#sobre"><span class="num">I</span><span class="label">Sobre</span></a>
+    <a href="#servicos"><span class="num">II</span><span class="label">Serviços</span></a>
+    <a href="#cases"><span class="num">III</span><span class="label">Cases</span></a>
+    <a href="#contato"><span class="num">IV</span><span class="label">Contato</span></a>
+  </nav>
+
   <script>
     (function () {
       const track = document.getElementById('track');
@@ -883,24 +903,5 @@
       window.__heroVideo = { fitAuthorityWidth, scrollProgress, video };
     })();
   </script>
-  <!-- Fixed overlays (do not scroll away with the video intro) -->
-  <a class="brand-fixed" id="brandFixed" href="#topo" aria-label="Futuriza">
-    <img class="wordmark" src="brand/logo-futuriza.png" alt="Futuriza" width="140" height="40" />
-  </a>
-  <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-controls="sideNav" aria-expanded="false">
-    <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span><span></span></span>
-  </button>
-  <div class="nav-backdrop" id="navBackdrop" hidden></div>
-  <a class="cta" href="#contato">Começar Agora</a>
-  <nav class="side" id="sideNav" aria-label="Menu">
-    <a class="nav-brand" href="#topo" aria-label="Futuriza">
-      <img src="brand/logo-futuriza.png" alt="Futuriza" width="140" height="40" />
-    </a>
-    <a href="#sobre"><span class="num">I</span><span class="label">Sobre</span></a>
-    <a href="#servicos"><span class="num">II</span><span class="label">Serviços</span></a>
-    <a href="#cases"><span class="num">III</span><span class="label">Cases</span></a>
-    <a href="#contato"><span class="num">IV</span><span class="label">Contato</span></a>
-  </nav>
-
 </body>
 </html>
